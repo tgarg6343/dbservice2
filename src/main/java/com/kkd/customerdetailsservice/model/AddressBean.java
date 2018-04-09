@@ -4,7 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Address {
+public class AddressBean {
 
 	private Integer pincode;
 	private String addressLine;
@@ -13,11 +13,12 @@ public class Address {
 	private String state;
 	private Boolean primary;
 
-	public Address() {
+	public AddressBean() {
 		super();
 	}
 
-	public Address(Integer pincode, String addressLine, String city, String district, String state, Boolean primary) {
+	public AddressBean(Integer pincode, String addressLine, String city, String district, String state,
+			Boolean primary) {
 		super();
 		this.pincode = pincode;
 		this.addressLine = addressLine;

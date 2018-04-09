@@ -2,9 +2,9 @@ package com.kkd.customerdetailsservice.repository;
 
 import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import com.kkd.customerdetailsservice.model.Customer;
+import com.kkd.customerdetailsservice.model.CustomerBean;
 
-public interface CustomerRepository extends MongoRepository<Customer, String> {
+public interface CustomerRepository extends MongoRepository<CustomerBean, String> {
 
-	public Optional<Customer> findByMobileNo(String mobileNo);
+	public Optional<CustomerBean> findByMobileNo(String mobileNo);
 }

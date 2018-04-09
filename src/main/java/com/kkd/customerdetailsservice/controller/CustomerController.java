@@ -16,48 +16,67 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kkd.customerdetailsservice.model.Address;
-import com.kkd.customerdetailsservice.model.Customer;
+import com.kkd.customerdetailsservice.model.AddressBean;
+import com.kkd.customerdetailsservice.model.CustomerBean;
 import com.kkd.customerdetailsservice.repository.CustomerRepository;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 @RequestMapping("/customer")
-public class CustomerResource {
+public class CustomerController {
 	@Autowired
 	private CustomerRepository customerRepository;
 
 	/* add customer in the collection */
 	@PostMapping("/user")
 	@HystrixCommand(fallbackMethod = "fallbackStatus")
-	public ResponseEntity<HttpStatus> createCustomer(@RequestBody Customer customer) {
-		Optional<Customer> findByMobileNo = customerRepository.findByMobileNo(customer.getMobileNo());
-		if (findByMobileNo.isPresent()) {
+	public ResponseEntity<HttpStatus> createCustomer(@RequestBody CustomerBean customer) {
+		Optional<CustomerBean> findByMobileNo = customerRepository.findByMobileNo(customer.getMobileNo());
+		if (!findByMobileNo.isPresent()) {
 			customerRepository.save(customer);
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
 		return new ResponseEntity<>(HttpStatus.CONFLICT);
 	}
 
+	@GetMapping("/user/testing/{customer_id}")
+	public List<CustomerBean> getAllCustomers(@PathVariable String customer_id) {
+		System.out.println("---------------------------------------");
+		return customerRepository.findAll();
+	}
+
 	/* Get a customer from collection */
 	@GetMapping("/user/{customer_id}")
 	@HystrixCommand(fallbackMethod = "defaultCustomer")
-	public Optional<Customer> findCustomer(@PathVariable String customer_id) {
+	public Optional<CustomerBean> findCustomer(@PathVariable String customer_id) {
 		return customerRepository.findById(customer_id);
 	}
 
 	/* Update a customer detail */
 	@PutMapping("/user/{customer_id}")
 	@HystrixCommand(fallbackMethod = "fallbackStatus")
-	public ResponseEntity<HttpStatus> updateCustomerDetails(@RequestBody Customer customer) {
+	public ResponseEntity<HttpStatus> updateCustomerDetails(@RequestBody CustomerBean customer) {
 		customerRepository.save(customer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PutMapping("/user/{mobile}")
+	@HystrixCommand(fallbackMethod = "fallbackStatus")
+	public ResponseEntity<HttpStatus> updateCustomerPassword(@RequestBody String password,
+			@PathVariable("mobile") String mobile) {
+		Optional<CustomerBean> findByMobileNo = customerRepository.findByMobileNo(mobile);
+		if (findByMobileNo.isPresent()) {
+			CustomerBean customer = findByMobileNo.get();
+			customerRepository.save(customer);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.CONFLICT);
 	}
 
 	/* Get a customer by mobile number */
 	@GetMapping("/user/mobile/{mobile}")
 	@HystrixCommand(fallbackMethod = "defaultCustomer")
-	public Optional<Customer> findCustomerByMobile(@PathVariable String mobile) {
+	public Optional<CustomerBean> findCustomerByMobile(@PathVariable String mobile) {
 		return customerRepository.findByMobileNo(mobile);
 	}
 
@@ -65,15 +84,15 @@ public class CustomerResource {
 	 * Hystrix fallback for getmapping "/customer/{customer_id}" and get
 	 * mapping"/customer/{mobile}"
 	 */
-	public Optional<Customer> defaultCustomer(String id) {
-		return Optional.of(new Customer("fallback", "fallback", "fallback", "fallback", "fallback", null, null));
+	public Optional<CustomerBean> defaultCustomer(String id) {
+		return Optional.of(new CustomerBean("fallback", "fallback", "fallback", "fallback", "fallback", null, null));
 	}
 
 	/* delete a customer by customer id */
 	@DeleteMapping("/user/{customer_id}")
 	@HystrixCommand(fallbackMethod = "fallbackStatus")
 	public ResponseEntity<HttpStatus> deleteCustomer(@PathVariable String customer_id) {
-		Optional<Customer> customer = customerRepository.findById(customer_id);
+		Optional<CustomerBean> customer = customerRepository.findById(customer_id);
 		if (customer.isPresent()) {
 			customerRepository.delete(customer.get());
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -83,8 +102,8 @@ public class CustomerResource {
 
 	@GetMapping("/user/{customer_id}/addresses")
 	@HystrixCommand(fallbackMethod = "fallbackAddress")
-	public List<Address> getAddresses(@PathVariable String customer_id) {
-		Optional<Customer> findByCustomerId = customerRepository.findById(customer_id);
+	public List<AddressBean> getAddresses(@PathVariable String customer_id) {
+		Optional<CustomerBean> findByCustomerId = customerRepository.findById(customer_id);
 		if (findByCustomerId.isPresent()) {
 			return findByCustomerId.get().getAddresses();
 		}
@@ -92,17 +111,17 @@ public class CustomerResource {
 	}
 
 	/* provide fallback addresses */
-	public List<Address> fallbackAddress() {
-		return Arrays.asList(new Address(999999, "fallback", "fallback", "fallback", "fallback", false));
+	public List<AddressBean> fallbackAddress() {
+		return Arrays.asList(new AddressBean(999999, "fallback", "fallback", "fallback", "fallback", false));
 	}
 
 	@PutMapping("/user/{customer_id}/addresses")
 	@HystrixCommand(fallbackMethod = "fallbackStatus")
-	public ResponseEntity<HttpStatus> addAddress(@PathVariable String customer_id, @RequestBody Address address) {
-		Optional<Customer> findByCustomerId = customerRepository.findById(customer_id);
+	public ResponseEntity<HttpStatus> addAddress(@PathVariable String customer_id, @RequestBody AddressBean address) {
+		Optional<CustomerBean> findByCustomerId = customerRepository.findById(customer_id);
 		if (findByCustomerId.isPresent()) {
-			Customer customer = findByCustomerId.get();
-			List<Address> addresses = customer.getAddresses();
+			CustomerBean customer = findByCustomerId.get();
+			List<AddressBean> addresses = customer.getAddresses();
 			addresses.add(address);
 			customer.setAddresses(addresses);
 			customerRepository.save(customer);
@@ -112,7 +131,7 @@ public class CustomerResource {
 	}
 
 	/* hystrix fallback method for default customer creation */
-	public ResponseEntity<HttpStatus> fallbackStatus(Customer customer) {
+	public ResponseEntity<HttpStatus> fallbackStatus(CustomerBean customer) {
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 
@@ -120,7 +139,7 @@ public class CustomerResource {
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 
-	public ResponseEntity<HttpStatus> fallbackStatus(String id, Address address) {
+	public ResponseEntity<HttpStatus> fallbackStatus(String id, AddressBean address) {
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 }

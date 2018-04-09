@@ -8,24 +8,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "customer")
-public class Customer {
+public class CustomerBean {
 
-	static Integer start = 1000;
 	@Id
 	private String customerId;
 	private String mobileNo;
 	private String password;
 	private String firstName;
 	private String lastName;
-	private List<Address> addresses;
-	private Address primaryAddress;
+	private List<AddressBean> addresses;
+	private AddressBean primaryAddress;
 
-	public Customer() {
+	public CustomerBean() {
 		super();
 	}
 
-	public Customer(String customerId, String mobileNo, String password, String firstName, String lastName,
-			List<Address> addresses, Address primaryAddress) {
+	public CustomerBean(String customerId, String mobileNo, String password, String firstName, String lastName,
+			List<AddressBean> addresses, AddressBean primaryAddress) {
 		super();
 		this.customerId = customerId;
 		this.mobileNo = mobileNo;
@@ -41,7 +40,7 @@ public class Customer {
 	}
 
 	public void setCustomerId(String customerId) {
-		this.customerId = "CUST" + start++;
+		this.customerId = customerId;
 	}
 
 	public String getMobileNo() {
@@ -76,19 +75,19 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
-	public List<Address> getAddresses() {
+	public List<AddressBean> getAddresses() {
 		return addresses;
 	}
 
-	public void setAddresses(List<Address> addresses) {
+	public void setAddresses(List<AddressBean> addresses) {
 		this.addresses = addresses;
 	}
 
-	public Address getPrimaryAddress() {
+	public AddressBean getPrimaryAddress() {
 		return primaryAddress;
 	}
 
-	public void setPrimaryAddress(Address primaryAddress) {
+	public void setPrimaryAddress(AddressBean primaryAddress) {
 		this.primaryAddress = primaryAddress;
 	}
 

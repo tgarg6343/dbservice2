@@ -19,8 +19,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.context.annotation.Bean;
 
-import com.kkd.customerdetailsservice.model.Address;
-import com.kkd.customerdetailsservice.model.Customer;
+import com.kkd.customerdetailsservice.model.AddressBean;
+import com.kkd.customerdetailsservice.model.CustomerBean;
 import com.kkd.customerdetailsservice.repository.CustomerRepository;
 
 import brave.sampler.Sampler;
@@ -33,7 +33,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableCircuitBreaker
 @EnableHystrixDashboard
 @SpringBootApplication
-@EnableRabbit
+// @EnableRabbit
 public class CustomerDetailsServiceApplication implements CommandLineRunner {
 
 	@Autowired
@@ -54,12 +54,12 @@ public class CustomerDetailsServiceApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("starting -------------------------------------------------------");
-		customerRepository.save(new Customer("hgbhj", "hgbhj", "hgbhj", "hgbhj", "hgbhj", null, null));
-		List<Address> addresses = new ArrayList<Address>();
-		Address address = new Address(132039, "assandh house no. 58", "assandh", "karnal", "haryana", true);
+		customerRepository.save(new CustomerBean("hgbhj", "hgbhj", "hgbhj", "hgbhj", "hgbhj", null, null));
+		List<AddressBean> addresses = new ArrayList<AddressBean>();
+		AddressBean address = new AddressBean(132039, "assandh house no. 58", "assandh", "karnal", "haryana", true);
 		addresses.add(address);
 		customerRepository
-				.save(new Customer("CUST0001", "5461461263", "password", "Aisha", "Sharma", addresses, address));
+				.save(new CustomerBean("CUST0001", "5461461263", "password", "Aisha", "Sharma", addresses, address));
 
 	}
 
@@ -68,15 +68,6 @@ public class CustomerDetailsServiceApplication implements CommandLineRunner {
 		return Sampler.ALWAYS_SAMPLE;
 	}
 
-	// @Bean
-	// public Docket api() throws IOException, XmlPullParserException {
-	// MavenXpp3Reader reader = new MavenXpp3Reader();
-	// Model model = reader.read(new FileReader("pom.xml"));
-	// return new Docket(DocumentationType.SWAGGER_2);
-	//
-	// }
-
-	// creating exchange
 	@Bean
 	public TopicExchange appExchange() {
 		return new TopicExchange(EXCHANGE_NAME);
