@@ -7,10 +7,10 @@ import javax.annotation.Generated;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="customer")
+@Document(collection = "customer")
 public class Customer {
 
-	static Integer start=1000;
+	static Integer start = 1000;
 	@Id
 	private String customerId;
 	private String mobileNo;
@@ -19,13 +19,13 @@ public class Customer {
 	private String lastName;
 	private List<Address> addresses;
 	private Address primaryAddress;
-		
+
 	public Customer() {
 		super();
 	}
 
-	public Customer(String customerId, String mobileNo, String password, String firstName, String lastName, List<Address> addresses,
-			Address primaryAddress) {
+	public Customer(String customerId, String mobileNo, String password, String firstName, String lastName,
+			List<Address> addresses, Address primaryAddress) {
 		super();
 		this.customerId = customerId;
 		this.mobileNo = mobileNo;
@@ -35,15 +35,15 @@ public class Customer {
 		this.addresses = addresses;
 		this.primaryAddress = primaryAddress;
 	}
-	
+
 	public String getCustomerId() {
 		return customerId;
 	}
 
 	public void setCustomerId(String customerId) {
-		this.customerId = "CUST"+start++;
+		this.customerId = "CUST" + start++;
 	}
-	
+
 	public String getMobileNo() {
 		return mobileNo;
 	}
@@ -97,5 +97,5 @@ public class Customer {
 		return "Customer [customerId=" + customerId + ", mobileNo=" + mobileNo + ", password=" + password
 				+ ", firstName=" + firstName + ", lastName=" + lastName + ", addresses=" + addresses
 				+ ", primaryAddress=" + primaryAddress + "]";
-	}		
+	}
 }
